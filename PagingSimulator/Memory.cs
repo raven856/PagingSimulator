@@ -9,51 +9,93 @@ namespace PagingSimulator
     class Memory
     {
         string scheme; //FIFO(Queue) or LRU(Frequency)
-        Frame[] frames;
+        public Frame[] frames;
         Queue<string> queue; //queue of page ids 
 
         public Memory(int frameCount, string pagingScheme)
         {
             frames = new Frame[frameCount];
             scheme = pagingScheme;
+            queue = new Queue<string>();
 
             if (scheme == "FIFO")
             {
                 queue = new Queue<string>();
             }
+            for(int i = 0; i < frames.Length; i++)
+            {
+                frames[i] = new Frame();
+            }
 
         }
 
-        public bool offer(Page aPage)
+        public bool offer(Page aPage)  //true if there was swap , false it went in or was in already
         {
             if (scheme == "FIFO")
             {
-                if (!this.contains(aPage))
-                {
-                    queue.Enqueue(aPage.id);
-
+               // if (!this.contains(aPage))
+               if(!aPage.isLoaded) //page is not already loaded
+                {               
                     foreach (Frame frame in frames)
-                    {
+                    {//free space
                         if (frame.isFree)
                         {
-                            frame.put(aPage);
-                        }
-                        else if (frame.getPage().id == queue.Dequeue())
+                            frame.put(ref aPage);
+                            queue.Enqueue(aPage.id);
+                            return false;
+                        }                       
+                    }
+                    foreach (Frame frame in frames)
+                    {//swap it with first up on queue
+                        if (frame.getPage().id == queue.First())
                         {
-                            frame.put(aPage);
+                            queue.Dequeue();
+                            frame.put(ref aPage);
+                            queue.Enqueue(aPage.id);
+                            return true;
                         }
                     }
-                    return true;
                 }                         
             }
             else // LRU
             {
-
+                // if (!this.contains(aPage))
+                if (!aPage.isLoaded) //page is not already loaded
+                {
+                    foreach (Frame frame in frames)
+                    {//free space
+                        if (frame.isFree)
+                        {
+                            frame.put(ref aPage);
+                            queue.Enqueue(aPage.id);
+                            return false;
+                        }
+                    }
+                    int min = 9999999;
+                    foreach (Frame frame in frames)
+                    {
+                        //get min frequency
+                        if (frame.getPage().frequency < min)
+                        {
+                            min = frame.getPage().frequency;
+                        }
+                        //swap it with frame having page with lowest frequency
+                    }
+                    foreach (Frame frame in frames)
+                    {
+                        //swap it with frame having page with lowest frequency
+                        if (frame.getPage().frequency == min)
+                        {
+                            frame.put(ref aPage);
+                            return true;
+                        }
+                    }
+                }
             }
 
-            return false;
+            return false; //already loaded
         }
-
+        /*
         private bool contains(Page aPage)
         {
             foreach (Frame frame in frames)
@@ -66,6 +108,6 @@ namespace PagingSimulator
                 }
             }
             return false;
-        }
+        }*/
     }
 }

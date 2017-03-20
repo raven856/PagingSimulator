@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PagingSimulator
 {
-    class Frame
+    public class Frame
     {
         public bool isFree = true;
         private Page page;
@@ -24,9 +24,14 @@ namespace PagingSimulator
         {
             return page;
         }
-        public void put(Page aPage)
+        public void put(ref Page aPage)
         {
+            if (!isFree)
+            {
+                page.isLoaded = false;
+            }
             page = aPage;
+            aPage.isLoaded = true;
             isFree = false;
         }
     }
