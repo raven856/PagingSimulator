@@ -79,12 +79,6 @@ namespace PagingSimulator
             this.Width += ammount;
         }
 
-        private void button2_Click(object sender, EventArgs e) //TESTER Event
-        {
-            DrawBox(0, 0, 200, 200);
-            addWidth(100);
-        }
-
         public void drawPages() //should be called onLoad
         {
             Pen myPen = new Pen(Color.Black);
