@@ -16,7 +16,8 @@ namespace PagingSimulator
         List<Page> requests; //pages requesting entry
         Font myFont = new Font("Microsoft sans serif", 9);
         Memory memory;
-
+        bool miss = false;
+        int missCount = 0;
         public Form1()
         {
             pages = new List<Page>();
@@ -113,6 +114,7 @@ namespace PagingSimulator
                 formGraphics.DrawRectangle(myPen, new Rectangle(100, 40 + (i * 45), 45 * requests.Count, 40));                      
                 //formGraphics.DrawLine(myPen, new Point(100, ))
             }
+
             myBrush.Dispose();
             myPen.Dispose();
             formGraphics.Dispose();
@@ -135,6 +137,12 @@ namespace PagingSimulator
                     if (!someFrames[i].isFree)
                     {
                         formGraphics.DrawString((someFrames[i].getPage().id), myFont, myBrush, point);
+                        if (miss == true) {
+                            formGraphics.DrawString("x", myFont, myBrush, 102+(45*requestNumber), (55 + (someFrames.Length * 45)));
+                            missCount++;
+                            miss = false;
+                        }
+
                     }
                     //formGraphics.DrawLine(myPen, new Point(100, ))
                 }
@@ -158,6 +166,19 @@ namespace PagingSimulator
             myBrush.Dispose();
         }
 
+        public void drawMisses()
+        {
+            System.Drawing.Graphics formGraphics = this.CreateGraphics();
+            Pen myPen = new Pen(Color.Black);
+            SolidBrush myBrush = new SolidBrush(Color.Black);
+
+            formGraphics.DrawString("Missed: " + missCount + "/" + requests.Count, myFont, myBrush, 150, 400);
+
+            myBrush.Dispose();
+            myPen.Dispose();
+            formGraphics.Dispose();
+        }
+
         private void btnFIFO_Click(object sender, EventArgs e)
         {
 
@@ -173,7 +194,7 @@ namespace PagingSimulator
         {
             if (requestNumber < requests.Count)
             {
-                memory.offer(requests[requestNumber]);
+                miss = memory.offer(requests[requestNumber]);
                 drawFramePages(memory.frames);
 
                 foreach(Page page in pages)
@@ -184,6 +205,10 @@ namespace PagingSimulator
                     }
                 }
                 requestNumber++;
+            }
+            else
+            {
+                drawMisses();
             }
         }
 
