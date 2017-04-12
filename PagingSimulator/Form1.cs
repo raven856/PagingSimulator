@@ -173,6 +173,9 @@ namespace PagingSimulator
             SolidBrush myBrush = new SolidBrush(Color.Black);
 
             formGraphics.DrawString("Missed: " + missCount + "/" + requests.Count, myFont, myBrush, 150, 400);
+            formGraphics.DrawString("Missed: " + String.Format("Value: {0:P2}.",
+                (Double.Parse(missCount.ToString())/ Double.Parse(requests.Count.ToString())))+"%",
+                myFont, myBrush, 240, 400);
 
             myBrush.Dispose();
             myPen.Dispose();
